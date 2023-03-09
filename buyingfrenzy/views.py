@@ -23,3 +23,4 @@ class UserList(generics.ListAPIView):
 class PurchaseHistoryList(generics.ListAPIView):
     queryset = PurchaseHistory.objects.all()
     serializer_class = PurchaseHistorySerializer
+
