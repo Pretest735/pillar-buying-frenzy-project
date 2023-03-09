@@ -8,12 +8,12 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
 class MenuSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('id', 'dish_name', 'price', 'restaurant_name')
+        fields = ('id', 'dish_name', 'price', 'restaurant')
         model = Menu
 
 class OpenHoursSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('id', 'day', 'opening_hour', 'closing_hour', 'restaurant_name')
+        fields = ('id', 'day', 'opening_hour', 'closing_hour', 'restaurant')
         model = OpenHours
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,5 +23,5 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PurchaseHistorySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('id', 'dish_name', 'restaurant_name', 'transaction_amount', 'transaction_date', 'user_name')
+        fields = ('id', 'dish_name', 'restaurant', 'transaction_amount', 'transaction_date', 'user')
         model = PurchaseHistory

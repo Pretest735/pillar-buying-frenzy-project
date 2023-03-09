@@ -9,25 +9,25 @@ def load_restaurant_data():
     data = json.load(file)
     
     for restaurant in data:
-        restaurant_id = store_restaurant_data(restaurant.get("restaurantName"), restaurant.get("cashBalance"))
-        populate_openhours_data(restaurant_id, restaurant.get("openingHours"))
+        saved_restaurant = store_restaurant_data(restaurant.get("restaurantName"), restaurant.get("cashBalance"))
+        populate_openhours_data(saved_restaurant, restaurant.get("openingHours"))
 
         menus = restaurant.get("menu")
 
         for menu in menus:
-            store_menu_data(menu.get("dishName"), menu.get("price"), restaurant_id)
+            store_menu_data(menu.get("dishName"), menu.get("price"), saved_restaurant)
 
 def store_restaurant_data(name, balance):
     restaurant = Restaurant()
     restaurant.restaurant_name = name
     restaurant.balance = balance
     restaurant.save()
-    return restaurant.id
+    return restaurant
 
 week_days = ['Mon', 'Tues', 'Weds', 'Thurs', 'Fri', 'Sat', 'Sun']
-def populate_openhours_data(restaurant_id, openingHours):
+def populate_openhours_data(restaurant, openingHours):
     open_hours = OpenHours()
-    open_hours.restaurant_name = restaurant_id
+    open_hours.restaurant_name = restaurant
     opened_days = openingHours.split("/")
     
     for temp in opened_days:
@@ -69,7 +69,7 @@ def populate_openhours_data(restaurant_id, openingHours):
         close_time = parser_time_hh_mm(day[i:].split('-')[1])
         
         for day in days:
-            store_openhour_data(day, open_time, close_time, restaurant_id)
+            store_openhour_data(day, open_time, close_time, restaurant)
 
     
 def parser_time_hh_mm(t):
@@ -77,19 +77,19 @@ def parser_time_hh_mm(t):
     print(parser.parse(t))
     return datetime.strftime(parser.parse(t), '%H:%M')
 
-def store_openhour_data(day, open_time, close_time, restaurant_id):
+def store_openhour_data(day, open_time, close_time, restaurant):
     open_hours = OpenHours()
     open_hours.day = day
     open_hours.opening_hour = open_time
     open_hours.closing_hour = close_time
-    open_hours.restaurant_name = restaurant_id
+    open_hours.restaurant = restaurant
     open_hours.save()
 
-def store_menu_data(dish_name, price, restaurant_id):
+def store_menu_data(dish_name, price, restaurant):
     menu = Menu()
     menu.dish_name = dish_name
     menu.price = price
-    menu.restaurant_name = restaurant_id
+    menu.restaurant = restaurant
     menu.save()
 
 
@@ -101,13 +101,13 @@ def load_user_purchase_history():
         user_id = user_purchase_data.get("id")
         user_name = user_purchase_data.get("name")
         cash_balance = user_purchase_data.get("cashBalance")
-        store_user_data(user_id, user_name, cash_balance)
+        saved_user=store_user_data(user_id, user_name, cash_balance)
 
         purchase_history = user_purchase_data.get("purchaseHistory")
         for purchase in purchase_history:
-            restaurant = Restaurant.objects.get(purchase.get("restaurantName"))
-            menu = Menu.objects.get(purchase.get("dishName"))
-            store_purchase_data(menu.id, restaurant.id, purchase.get("transactionAmount"), purchase.get("transactionDate"), user_id)
+            restaurant = Restaurant.objects.get(restaurant_name=purchase.get("restaurantName"))
+            menu = Menu.objects.get(dish_name=purchase.get("dishName"))
+            store_purchase_data(menu, restaurant, purchase.get("transactionAmount"), purchase.get("transactionDate"), saved_user)
 
 
 def store_user_data(id, name, cash_balance):
@@ -116,6 +116,7 @@ def store_user_data(id, name, cash_balance):
     user.name = name
     user.cash_balance = cash_balance
     user.save()
+    return user
 
 def store_purchase_data(dish_name, restaurant_name, transaction_amount, transaction_date, user_name):
     purchase_history = PurchaseHistory()
@@ -124,3 +125,6 @@ def store_purchase_data(dish_name, restaurant_name, transaction_amount, transact
     purchase_history.transaction_amount = transaction_amount
     purchase_history.transaction_date = str(transaction_date).strip()
     purchase_history.user_name = user_name
+
+load_restaurant_data()
+load_user_purchase_history()
