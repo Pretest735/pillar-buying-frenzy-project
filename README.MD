@@ -1,4 +1,4 @@
-Environment Setup:
+***Environment Setup:
 1. The installed Python version is 3.10
 2. After cloning the repository, cd to 'Pillar/' directory
 3. Create a python virtual env
@@ -10,7 +10,7 @@ Environment Setup:
 	- pip3 install python-dateutil
 	- pip3 install django-extensions
 
-Database Setup and ETL:
+***Database Setup and ETL:
 1. Default db.sqlite is used
 2. We need to run the following commands to create the tables defined in models
 	- python3 manage.py makemigration buyingfrenzy
@@ -19,7 +19,7 @@ Database Setup and ETL:
 	- python3 manage.py runscript load_data --chdir /buyingfrenzy
 
 
-API Documentation:
+***API Documentation:
 List all restaurants that are open at a certain datetime
 GET /restaurants/date-time
 Params:
@@ -52,6 +52,6 @@ process transactions when user buys a dish from a restaurant, adds to restaurant
 covers checks for invalid conditions
 
 
-Run Server
+***Run Server
 1. Run the server with command "python3 manage.py runserver"
 2. Then we can make requests using postman to 'http://127.0.0.1:8000/api/pillar-project/' above apis
