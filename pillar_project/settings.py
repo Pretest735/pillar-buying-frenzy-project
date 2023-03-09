@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "buyingfrenzy.apps.BuyingfrenzyConfig",
+    "django_extensions"
 ]
 
 REST_FRAMEWORK = {

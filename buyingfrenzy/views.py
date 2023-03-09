@@ -1,41 +1,226 @@
 from django.shortcuts import render
-from rest_framework.views import generics, APIView
-from django.http import Http404
 from rest_framework.views import APIView
+from django.http import Http404
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework import status
+from rest_framework import generics
 from datetime import datetime
 from dateutil import parser
 from .models import *
 from .serializers import *
+from rest_framework import status
 
 # Create your views here.
 
-class RestaurantList(generics.ListAPIView):
-    queryset = Restaurant.objects.all()
-    serializer_class = RestaurantSerializer
 
-class MenuList(generics.ListAPIView):
-    queryset = Menu.objects.all()
-    serializer_class = MenuSerializer
+class RestaurantList(APIView):
+    def get(self, request, format=None):
+        restaurants = Restaurant.objects.all()
+        serializer = RestaurantSerializer(restaurants, many=True)
+        return Response(serializer.data)
 
-class OpenHoursList(generics.ListAPIView):
-    queryset = OpenHours.objects.all()
-    serializer_class = OpenHoursSerializer
+    def post(self, request, format=None):
+        serializer = RestaurantSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class RestaurantDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Restaurant.objects.get(pk=pk)
+        except Restaurant.DoesNotExist:
+            raise Http404
 
-class PurchaseHistoryList(generics.ListAPIView):
-    queryset = PurchaseHistory.objects.all()
-    serializer_class = PurchaseHistorySerializer
+    def get(self, request, pk, format=None):
+        restaurant = self.get_object(pk)
+        serializer = RestaurantSerializer(restaurant)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        restaurant = self.get_object(pk)
+        serializer = RestaurantSerializer(restaurant, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        restaurant = self.get_object(pk)
+        restaurant.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MenuList(APIView):
+    def get(self, request, format=None):
+        menus = Menu.objects.all()
+        serializer = MenuSerializer(menus, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = MenuSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class MenuDetail(APIView):
+    """
+    Retrieve, update or delete a menu instance.
+    """
+    def get_object(self, pk):
+        try:
+            return Menu.objects.get(pk=pk)
+        except Menu.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        menu = self.get_object(pk)
+        serializer = MenuSerializer(menu)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        menu = self.get_object(pk)
+        serializer = MenuSerializer(menu, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        menu = self.get_object(pk)
+        menu.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class OpenHoursList(APIView):
+    def get(self, request, format=None):
+        open_hours = OpenHours.objects.all()
+        serializer = OpenHoursSerializer(open_hours, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = OpenHoursSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class OpenHoursDetail(APIView):
+    """
+    Retrieve, update or delete a open_hour instance.
+    """
+    def get_object(self, pk):
+        try:
+            return OpenHours.objects.get(pk=pk)
+        except OpenHours.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        open_hour = self.get_object(pk)
+        serializer = OpenHoursSerializer(open_hour)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        open_hour = self.get_object(pk)
+        serializer = OpenHoursSerializer(open_hour, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        open_hour = self.get_object(pk)
+        open_hour.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class UserList(APIView):
+    def get(self, request, format=None):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserDetail(APIView):
+    """
+    Retrieve, update or delete a user instance.
+    """
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        user = self.get_object(pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        user = self.get_object(pk)
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        user = self.get_object(pk)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class PurchaseHistoryList(APIView):
+    def get(self, request, format=None):
+        purchase_historys = PurchaseHistory.objects.all()
+        serializer = PurchaseHistorySerializer(purchase_historys, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = PurchaseHistorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PurchaseHistoryDetail(APIView):
+    """
+    Retrieve, update or delete a purchase_history instance.
+    """
+    def get_object(self, pk):
+        try:
+            return PurchaseHistory.objects.get(pk=pk)
+        except PurchaseHistory.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        purchase_history = self.get_object(pk)
+        serializer = PurchaseHistorySerializer(purchase_history)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        purchase_history = self.get_object(pk)
+        serializer = PurchaseHistorySerializer(purchase_history, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        purchase_history = self.get_object(pk)
+        purchase_history.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class RestaurantQueryList(APIView):
     def get_object(self, name):
         try:
-            Restaurant.objects.get(restaurant_name=name)
+            Restaurant.objects.filter(restaurant_name=name)
         except Restaurant.DoesNotExist:
             raise Http404
 
@@ -46,7 +231,7 @@ class RestaurantQueryList(APIView):
 class MenuQueryList(APIView):
     def get_object(self, name):
         try:
-            Menu.objects.get(dish_name=name)
+            Menu.objects.filter(dish_name=name)
         except Menu.DoesNotExist:
             raise Http404
 
@@ -57,7 +242,7 @@ class MenuQueryList(APIView):
 class RestaurantDateTimeQueryView(APIView):
     def get(self, request, format=None):
         date = request.data.date
-        time = request.time
+        time = request.data.time
         # get day of the week
         week_days = ['Sun', 'Mon', 'Tues', 'Weds', 'Thurs', 'Fri', 'Sat']
         day_num = datetime.strftime(parser.parse(date), '%w')

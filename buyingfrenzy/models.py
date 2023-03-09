@@ -18,7 +18,7 @@ class Menu(models.Model):
         return self.dish_name
 
 class OpenHours(models.Model):
-    day = models.CharField(max_length=3)
+    day = models.CharField(max_length=6)
     opening_hour = models.TimeField()
     closing_hour = models.TimeField()
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
