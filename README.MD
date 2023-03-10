@@ -23,31 +23,31 @@
 List all restaurants that are open at a certain datetime
 GET /restaurants/date-time
 Params:
-    date
-    time 
+    date : "YYYY-MM-DD"
+    time : "HH:MM"
 Get all restaurants that are open on a day of the week, at a certain time
 
-GET /restaurants/<restaurant_name>
+_GET /restaurants/restaurant
+Param: restaurant_name
 Search for restaurants with the restaurant name
-
-GET /menus/<dish_name>
+**
+_GET /menus/dish/
+Param: dish_name_**
 Search for menus with the dish name
 
-GET /menus/price-range
+_**GET /menus/price-range**
 Params:
     max_price
     min_price 
     x
-    query_type('more' or 'less')
+    query_type: 'more' or 'less'_
 Get all restaurants that have more or less than x dishes that are within a price range, sorted alphabetically on restaurant name
 
-
-Process a user purchasing a dish from a restaurant, handling all relevant data changes in an atomic transaction
-POST /purchase/<user_id>/transaction
+_**POST /purchase/<user_id>/transaction**
 params:
     restaurant_name: string
     dish_name: string
-    
+_    
 process transactions when user buys a dish from a restaurant, adds to restaurant balance, subtracts from user balance, adds user purchase history.
 covers checks for invalid conditions
 
