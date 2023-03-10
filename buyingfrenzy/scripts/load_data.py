@@ -200,10 +200,17 @@ def load_user_purchase_history():
         saved_user=store_user_data(user_id, user_name, cash_balance)
 
         purchase_history = user_purchase_data.get("purchaseHistory")
+        cnt = 0
         for purchase in purchase_history:
             # print(purchase)
             restaurant = Restaurant.objects.get(restaurant_name=purchase.get("restaurantName"))
             menu = Menu.objects.filter(dish_name=purchase.get("dishName"),restaurant=restaurant).first()
+            # if cnt == 0:
+            #     print("restaurant ", restaurant)
+            #     print("menu ", menu)
+            #     print("user ", saved_user)
+            #     cnt+=1
+
             store_purchase_data(menu, restaurant, purchase.get("transactionAmount"), purchase.get("transactionDate"), saved_user)
 
 
@@ -222,6 +229,7 @@ def store_purchase_data(dish_name, restaurant, transaction_amount, transaction_d
     purchase_history.transaction_amount = transaction_amount
     purchase_history.transaction_date = str(transaction_date).strip()
     purchase_history.user = user
+    purchase_history.save()
 
 def delete_previous_data():
     purchase_histories=PurchaseHistory.objects.all()
