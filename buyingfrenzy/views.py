@@ -220,29 +220,34 @@ class PurchaseHistoryDetail(APIView):
 class RestaurantQueryList(APIView):
     def get_object(self, name):
         try:
-            Restaurant.objects.filter(restaurant_name=name)
+            return Restaurant.objects.filter(restaurant_name=name)
         except Restaurant.DoesNotExist:
             raise Http404
 
-    def get(self, request, restaurant_name, format=None):
+    def get(self, request, format=None):
+            restaurant_name = request.data.get("restaurant_name")
             restaurant = self.get_object(restaurant_name)
+            serializer = RestaurantSerializer(restaurant, many=True)
             return Response(restaurant)
         
 class MenuQueryList(APIView):
     def get_object(self, name):
         try:
-            Menu.objects.filter(dish_name=name)
+            return Menu.objects.filter(dish_name=name)
         except Menu.DoesNotExist:
             raise Http404
 
-    def get(self, request, dish_name, format=None):
-            menu = self.get_object(dish_name)
-            return Response(menu)
+    def get(self, request, format=None):
+        dish_name = request.data.get("dish_name")
+        menu = self.get_object(dish_name)
+        serializer=MenuSerializer(menu, many=True)
+        return Response(serializer.data)
 
 class RestaurantDateTimeQueryView(APIView):
     def get(self, request, format=None):
-        date = request.data.date
-        time = request.data.time
+        date = request.data.get("date")
+        time = request.data.get("time")
+        print(date, time)
         # get day of the week
         week_days = ['Sun', 'Mon', 'Tues', 'Weds', 'Thurs', 'Fri', 'Sat']
         day_num = datetime.strftime(parser.parse(date), '%w')
@@ -262,10 +267,10 @@ class RestaurantDateTimeQueryView(APIView):
 class DishPriceQueryList(APIView):
     def get(self, request):
         print(request)
-        min_price = request.data.min_price
-        max_price = request.data.max_price
-        query_type = request.data.query_type
-        x = request.data.x
+        min_price = request.data.get("min_price")
+        max_price = request.data.get("max_price")
+        query_type = request.data.get("query_type")
+        x = int(request.data.get("x"))
 
         # run more or less query
         # first get all menus within price range and join them based on restaurant_id
@@ -292,8 +297,8 @@ class DishPriceQueryList(APIView):
 
 class UserPurchase(APIView):
     def post(self, request, user_id, format=None):
-        query_dish_name = request.data.dish_name
-        query_restaurant_name = request.data.restaurant_name
+        query_dish_name = request.data.get("dish_name")
+        query_restaurant_name = request.data.get("restaurant_name")
 
         # get user, menu and restaurant
         user = User.objects.get(id=user_id)
