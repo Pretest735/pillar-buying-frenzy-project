@@ -178,6 +178,7 @@ class UserDetail(APIView):
 class PurchaseHistoryList(APIView):
     def get(self, request, format=None):
         purchase_historys = PurchaseHistory.objects.all()
+        print(len(purchase_historys))
         serializer = PurchaseHistorySerializer(purchase_historys, many=True)
         return Response(serializer.data)
 
@@ -228,7 +229,7 @@ class RestaurantQueryList(APIView):
             restaurant_name = request.data.get("restaurant_name")
             restaurant = self.get_object(restaurant_name)
             serializer = RestaurantSerializer(restaurant, many=True)
-            return Response(restaurant)
+            return Response(serializer.data)
         
 class MenuQueryList(APIView):
     def get_object(self, name):
