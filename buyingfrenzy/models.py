@@ -4,7 +4,7 @@ from django.db import models
 
 class Restaurant(models.Model):
     restaurant_name = models.CharField(max_length=30)
-    cash_balance = models.IntegerField()
+    cash_balance = models.DecimalField(max_digits=19, decimal_places=2)
 
     def __str__(self):
         return self.restaurant_name
