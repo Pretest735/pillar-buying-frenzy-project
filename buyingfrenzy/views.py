@@ -9,7 +9,6 @@ from dateutil import parser
 from .models import *
 from .serializers import *
 from rest_framework import status
-
 # Create your views here.
 
 
@@ -278,21 +277,22 @@ class DishPriceQueryList(APIView):
         results = Menu.objects.filter(price__gte=min_price, price__lte=max_price)
         restaurant_count_dictionary = {}
         restaurant_list = []
+        cur=results.first().restaurant
+        count=0
         for menu in results:
-            if menu.restaurant.restaurant_name in restaurant_count_dictionary.keys():
-                restaurant_count_dictionary[menu.restaurant.restaurant_name] += 1
-            else: 
-                restaurant_count_dictionary[menu.restaurant.restaurant_name] = 0
+            if menu.restaurant.restaurant_name == cur.restaurant_name:
+                count += 1
+            else:
+                if query_type == 'more':
+                    if count > x:
+                        restaurant_list.append(cur)
+                else:
+                    if count < x:
+                        restaurant_list.append(cur)
+                cur=menu.restaurant
+                count=1
 
-        for k,v in restaurant_count_dictionary:
-            if query_type == 'more':
-                if v > x:
-                    restaurant_list.append(k)
-                
-            if query_type == 'more':
-                if v < x:
-                    restaurant_list.append(k)
-        restaurant_list = sorted(restaurant_list, key=lambda res: res['restaurant_name'])
+        restaurant_list = sorted(restaurant_list, key=lambda res: res.restaurant_name)
         serializer = RestaurantSerializer(restaurant_list, many=True)
         return Response(serializer.data)
 

@@ -207,9 +207,6 @@ def load_user_purchase_history():
             menu = Menu.objects.filter(dish_name=purchase.get("dishName"),restaurant=restaurant).first()
             
             transaction_date = datetime.strftime(parser.parse(str(purchase.get("transactionDate"))),"%Y-%m-%d %H:%M")
-            if cnt == 0:
-                print("transaction_date: ", transaction_date)
-                cnt+=1
             store_purchase_data(menu, restaurant, purchase.get("transactionAmount"), transaction_date, saved_user)
 
 
