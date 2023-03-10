@@ -192,6 +192,7 @@ def store_menu_data(dish_name, price, restaurant):
 def load_user_purchase_history():
     file = open("../buyingfrenzy/users_with_purchase_history.json")
     data = json.load(file)
+    cnt = 0
 
     for user_purchase_data in data:
         user_id = user_purchase_data.get("id")
@@ -200,18 +201,16 @@ def load_user_purchase_history():
         saved_user=store_user_data(user_id, user_name, cash_balance)
 
         purchase_history = user_purchase_data.get("purchaseHistory")
-        cnt = 0
         for purchase in purchase_history:
             # print(purchase)
             restaurant = Restaurant.objects.get(restaurant_name=purchase.get("restaurantName"))
             menu = Menu.objects.filter(dish_name=purchase.get("dishName"),restaurant=restaurant).first()
-            # if cnt == 0:
-            #     print("restaurant ", restaurant)
-            #     print("menu ", menu)
-            #     print("user ", saved_user)
-            #     cnt+=1
-
-            store_purchase_data(menu, restaurant, purchase.get("transactionAmount"), purchase.get("transactionDate"), saved_user)
+            
+            transaction_date = datetime.strftime(parser.parse(str(purchase.get("transactionDate"))),"%Y-%m-%d %H:%M")
+            if cnt == 0:
+                print("transaction_date: ", transaction_date)
+                cnt+=1
+            store_purchase_data(menu, restaurant, purchase.get("transactionAmount"), transaction_date, saved_user)
 
 
 def store_user_data(id, name, cash_balance):
@@ -227,7 +226,7 @@ def store_purchase_data(dish_name, restaurant, transaction_amount, transaction_d
     purchase_history.dish_name = dish_name
     purchase_history.restaurant = restaurant
     purchase_history.transaction_amount = transaction_amount
-    purchase_history.transaction_date = str(transaction_date).strip()
+    purchase_history.transaction_date = transaction_date
     purchase_history.user = user
     purchase_history.save()
 
